@@ -20,7 +20,7 @@ class Keypair(NamedTuple):
 def genkey(*, _wg=WG):
     """Generates a new private key."""
 
-    return run((_wg, 'genkey'), stdout=PIPE).stdout.deocde()
+    return run((_wg, 'genkey'), stdout=PIPE).stdout.decode()
 
 
 def pubkey(private, *, _wg=WG):
