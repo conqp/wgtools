@@ -20,7 +20,7 @@ class Keypair(NamedTuple):
 def genkey(*, _wg=WG):
     """Generates a new private key."""
 
-    return run((_wg, 'genkey'), stdout=PIPE).stdout.decode()
+    return run((_wg, 'genkey'), stdout=PIPE).stdout.decode().strip()
 
 
 def pubkey(private, *, _wg=WG):
@@ -28,7 +28,7 @@ def pubkey(private, *, _wg=WG):
 
     subproc = Popen((_wg, 'pubkey'), stdin=PIPE, stdout=PIPE)
     public, _ = subproc.communicate(private.encode())
-    return public.decode()
+    return public.decode().strip()
 
 
 def keypair(*, _wg=WG):
@@ -42,4 +42,4 @@ def keypair(*, _wg=WG):
 def genpsk(*, _wg=WG):
     """Generates a pre-shared key."""
 
-    return run((_wg, 'genpsk'), stdout=PIPE).stdout.decode()
+    return run((_wg, 'genpsk'), stdout=PIPE).stdout.decode().strip()
