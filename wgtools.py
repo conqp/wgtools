@@ -1,7 +1,7 @@
 """Python bindings for WireGuard."""
 
 from collections import namedtuple
-from subprocess import PIPE, check_output, Popen
+from subprocess import check_output
 
 
 __all__ = ['WG', 'Keypair', 'genkey', 'pubkey', 'keypair', 'genpsk']
@@ -16,15 +16,13 @@ Keypair = namedtuple('Keypair', ('public', 'private'))
 def genkey(*, _wg=WG):
     """Generates a new private key."""
 
-    return check_output((_wg, 'genkey')).decode().strip()
+    return check_output((_wg, 'genkey'))
 
 
-def pubkey(private, *, _wg=WG):
+def pubkey(key, *, _wg=WG):
     """Generates a public key for the given private key."""
 
-    subproc = Popen((_wg, 'pubkey'), stdin=PIPE, stdout=PIPE)
-    public, _ = subproc.communicate(private.encode())
-    return public.decode().strip()
+    return check_output((_wg, 'pubkey'), input=key, universal_newlines=True)
 
 
 def keypair(*, _wg=WG):
@@ -38,4 +36,4 @@ def keypair(*, _wg=WG):
 def genpsk(*, _wg=WG):
     """Generates a pre-shared key."""
 
-    return check_output((_wg, 'genpsk')).decode().strip()
+    return check_output((_wg, 'genpsk'), universal_newlines=True)
