@@ -16,13 +16,14 @@ Keypair = namedtuple('Keypair', ('public', 'private'))
 def genkey(*, _wg=WG):
     """Generates a new private key."""
 
-    return check_output((_wg, 'genkey'))
+    return check_output((_wg, 'genkey'), universal_newlines=True).strip()
 
 
 def pubkey(key, *, _wg=WG):
     """Generates a public key for the given private key."""
 
-    return check_output((_wg, 'pubkey'), input=key, universal_newlines=True)
+    return check_output(
+        (_wg, 'pubkey'), input=key, universal_newlines=True).strip()
 
 
 def keypair(*, _wg=WG):
@@ -36,4 +37,4 @@ def keypair(*, _wg=WG):
 def genpsk(*, _wg=WG):
     """Generates a pre-shared key."""
 
-    return check_output((_wg, 'genpsk'), universal_newlines=True)
+    return check_output((_wg, 'genpsk'), universal_newlines=True).strip()
