@@ -16,9 +16,6 @@ Keypair = namedtuple('Keypair', ('public', 'private'))
 def _check_text_output(*args, input=None):  # pylint: disable=W0622
     """Runs a subprocess and returns its text output."""
 
-    if isinstance(input, str):
-        input = input.encode()
-
     return check_output(args, input=input, universal_newlines=True).strip()
 
 
