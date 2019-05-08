@@ -1,7 +1,7 @@
 """Python bindings for WireGuard."""
 
-from collections import namedtuple
 from subprocess import check_output
+from typing import NamedTuple
 
 
 __all__ = ['WG', 'Keypair', 'genkey', 'pubkey', 'keypair', 'genpsk']
@@ -10,25 +10,16 @@ __all__ = ['WG', 'Keypair', 'genkey', 'pubkey', 'keypair', 'genpsk']
 WG = '/usr/bin/wg'
 
 
-Keypair = namedtuple('Keypair', ('public', 'private'))
-
-
-def _check_text_output(*args, input=None):  # pylint: disable=W0622
-    """Runs a subprocess and returns its text output."""
-
-    return check_output(args, input=input, universal_newlines=True).strip()
-
-
 def genkey(*, _wg=WG):
     """Generates a new private key."""
 
-    return _check_text_output(_wg, 'genkey')
+    return check_output((_wg, 'genkey'), text=True).strip()
 
 
 def pubkey(key, *, _wg=WG):
     """Generates a public key for the given private key."""
 
-    return _check_text_output(_wg, 'pubkey', input=key)
+    return check_output((_wg, 'pubkey'), input=key, text=True).strip()
 
 
 def keypair(*, _wg=WG):
@@ -42,4 +33,11 @@ def keypair(*, _wg=WG):
 def genpsk(*, _wg=WG):
     """Generates a pre-shared key."""
 
-    return _check_text_output(_wg, 'genpsk')
+    return check_output((_wg, 'genpsk'), text=True).strip()
+
+
+class Keypair(NamedTuple):
+    """A public / private key pair."""
+
+    public: str
+    private: str
