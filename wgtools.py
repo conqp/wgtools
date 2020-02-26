@@ -232,4 +232,6 @@ def clear_peers(interface: str):
     else:
         peers = show(interface)['peers'].keys()
         peers = {key: {'remove': True} for key in peers}
-        set(interface, peers=peers)
+
+        if peers:
+            set(interface, peers=peers)
