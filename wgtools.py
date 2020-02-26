@@ -212,7 +212,7 @@ def set(interface: str, listen_port: int = None, fwmark: str = None,
     return check_call((*_wg, *args))
 
 
-def clear_peers(interface: str):
+def clear_peers(interface: str, *, _wg: tuple = WG):
     """Removes all peers from the selected interface or all interfaces."""
 
     if interface == 'interfaces':
@@ -226,4 +226,4 @@ def clear_peers(interface: str):
         peers = {key: {'remove': True} for key in peers}
 
         if peers:
-            set(interface, peers=peers)
+            set(interface, peers=peers, _wg=_wg)
