@@ -15,7 +15,8 @@ __all__ = [
     'keypair',
     'genpsk',
     'show',
-    'set'
+    'set',
+    'clear_peers'
 ]
 
 
@@ -217,3 +218,18 @@ def set(interface: str, listen_port: int = None, fwmark: str = None,
                 args.append(','.join(str(ip) for ip in allowed_ips))
 
     return check_call((_wg, *args))
+
+
+def clear_peers(interface: str):
+    """Removes all peers from the selected interface or all interfaces."""
+
+    if interface == 'interfaces':
+        raise ValueError('Invalid interface name:', interface)
+
+    if interface == 'all':
+        for interface in show('interfaces'):    # pylint: disable=R1704
+            clear_peers(interface)
+    else:
+        peers = show(interface)['peers'].keys()
+        peers = {key: {'remove': True} for key in peers}
+        set(interface, peers=peers)
