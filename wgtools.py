@@ -2,7 +2,8 @@
 
 from ipaddress import ip_network
 from os import linesep
-from subprocess import check_output
+from pathlib import Path
+from subprocess import check_call, check_output
 from typing import NamedTuple
 
 
@@ -17,7 +18,7 @@ __all__ = [
 ]
 
 
-WG = '/usr/bin/wg'
+WG = Path('/usr/bin/wg')
 
 
 class Keypair(NamedTuple):
@@ -153,3 +154,49 @@ def show(interface: str = 'all', *, raw: bool = False, _wg: str = WG):
 
     text = check_output((_wg, 'show', interface), text=True).strip()
     return _parse_interface(text, raw=raw)
+
+
+# pylint: disable=W0622
+def set(interface: str, listen_port: int = None, fwmark: str = None,
+        private_key: Path = None, peers: dict = None, *, _wg: str = WG):
+    """Sets interface configuration."""
+
+    args = ['set', interface]
+
+    if listen_port is not None:
+        args.append('listen-port')
+        args.append(str(listen_port))
+
+    if fwmark is not None:
+        args.append('fwmark')
+        args.append(fwmark)
+
+    if private_key is not None:
+        args.append('private-key')
+        args.append(private_key)
+
+    if peers:
+        for peer, settings in peers.items():
+            args.append('peer')
+            args.append(peer)
+
+            if settings.get('remove'):
+                args.append('remove')
+
+            if psk := settings.get('preshared-key'):
+                args.append('preshared-key')
+                args.append(psk)
+
+            if endpoint := settings.get('endpoint'):
+                args.append('endpoint')
+                args.append(str(endpoint))
+
+            if persistent_keepalive := settings.get('persistent-keepalive'):
+                args.append('persistent-keepalive')
+                args.append(str(persistent_keepalive))
+
+            if allowed_ips := settings.get('allowed-ips'):
+                args.append('allowed-ips')
+                args.append(','.join(str(ip) for ip in allowed_ips))
+
+    return check_call((_wg, *args))
