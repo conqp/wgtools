@@ -1,5 +1,6 @@
 """Python bindings for WireGuard."""
 
+from ipaddress import ip_network
 from os import linesep
 from subprocess import check_output
 from typing import NamedTuple
@@ -26,19 +27,19 @@ class Keypair(NamedTuple):
     private: str
 
 
-def genkey(*, _wg=WG):
+def genkey(*, _wg: str = WG) -> str:
     """Generates a new private key."""
 
     return check_output((_wg, 'genkey'), text=True).strip()
 
 
-def pubkey(key, *, _wg=WG):
+def pubkey(key: str, *, _wg: str = WG) -> str:
     """Generates a public key for the given private key."""
 
     return check_output((_wg, 'pubkey'), input=key, text=True).strip()
 
 
-def keypair(*, _wg=WG):
+def keypair(*, _wg: str = WG) -> Keypair:
     """Generates a public-private key pair."""
 
     private = genkey(_wg=_wg)
@@ -46,13 +47,34 @@ def keypair(*, _wg=WG):
     return Keypair(public, private)
 
 
-def genpsk(*, _wg=WG):
+def genpsk(*, _wg: str = WG) -> str:
     """Generates a pre-shared key."""
 
     return check_output((_wg, 'genpsk'), text=True).strip()
 
 
-def _parse_interface(text):
+def _parse_value(key, value):
+    """Parses key / value pairs for wg show."""
+
+    if key == 'allowed ips':
+        return [ip_network(ip.strip()) for ip in value.split(',')]
+
+    if key == 'listening port':
+        return int(value)
+
+    if key == 'transfer':
+        received, sent = value.split(',')
+        received = received.replace('received', '')
+        sent = sent.replace('sent', '')
+        return {'received': received.strip(), 'sent': sent.strip()}
+
+    if value == '(hidden)':
+        return None
+
+    return value
+
+
+def _parse_interface(text: str, raw: bool = False) -> dict:
     """Parses interface information from the given text."""
 
     interface = {'peers': {}}
@@ -66,6 +88,9 @@ def _parse_interface(text):
 
         key, value = line.split(': ')
 
+        if not raw:
+            value = _parse_value(key, value)
+
         if key == 'peer':
             interface['peers'][value] = peer = {}
             continue
@@ -78,7 +103,7 @@ def _parse_interface(text):
     return interface
 
 
-def _parse_interfaces(text):
+def _parse_interfaces(text: str, raw: bool = False) -> dict:
     """parses interface information from
     the given text for multiple interfaces.
     """
@@ -94,6 +119,9 @@ def _parse_interfaces(text):
             continue
 
         key, value = line.split(': ')
+
+        if not raw:
+            value = _parse_value(key, value)
 
         if key == 'interface':
             interfaces[value] = interface = {'peers': {}}
@@ -112,16 +140,16 @@ def _parse_interfaces(text):
     return interfaces
 
 
-def show(interface='all', *, _wg=WG):
+def show(interface: str = 'all', *, raw: bool = False, _wg: str = WG):
     """Yields status information."""
 
     if interface == 'all':
         text = check_output((_wg, 'show', 'all'), text=True).strip()
-        return _parse_interfaces(text)
+        return _parse_interfaces(text, raw=raw)
 
     if interface == 'interfaces':
         text = check_output((_wg, 'show', 'interfaces'), text=True).strip()
         return text.split()
 
     text = check_output((_wg, 'show', interface), text=True).strip()
-    return _parse_interface(text)
+    return _parse_interface(text, raw=raw)
