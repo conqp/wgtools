@@ -59,7 +59,12 @@ def _parse_interface(text):
     peer = None
 
     for line in text.split(linesep):
-        key, value = line.strip().split(': ')
+        line = line.strip()
+
+        if not line:
+            continue
+
+        key, value = line.split(': ')
 
         if key == 'peer':
             interface['peers'][value] = peer = {}
@@ -83,7 +88,12 @@ def _parse_interfaces(text):
     peer = None
 
     for line in text.split(linesep):
-        key, value = line.strip().split(': ')
+        line = line.strip()
+
+        if not line:
+            continue
+
+        key, value = line.split(': ')
 
         if key == 'interface':
             interfaces[value] = interface = {'peers': {}}
