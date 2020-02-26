@@ -15,7 +15,8 @@ __all__ = [
     'keypair',
     'genpsk',
     'show',
-    'set'
+    'set',
+    'clear_peers'
 ]
 
 
