@@ -55,10 +55,13 @@ def genpsk(*, _wg: str = WG) -> str:
     return check_output((_wg, 'genpsk'), text=True).strip()
 
 
-def _parse_value(key, value):
+def _parse_value(key: str, value: str, *, json_compatible: bool = False):
     """Parses key / value pairs for wg show."""
 
     if key == 'allowed ips':
+        if json_compatible:
+            return [ip.strip() for ip in value.split(',')]
+
         return [ip_network(ip.strip()) for ip in value.split(',')]
 
     if key == 'listening port':
@@ -77,7 +80,8 @@ def _parse_value(key, value):
     return value
 
 
-def _parse_interface(text: str, raw: bool = False) -> dict:
+def _parse_interface(text: str, raw: bool = False,
+                     json_compatible: bool = False) -> dict:
     """Parses interface information from the given text."""
 
     interface = {'peers': {}}
@@ -92,7 +96,7 @@ def _parse_interface(text: str, raw: bool = False) -> dict:
         key, value = line.split(': ')
 
         if not raw:
-            value = _parse_value(key, value)
+            value = _parse_value(key, value, json_compatible=json_compatible)
 
         if key == 'peer':
             interface['peers'][value] = peer = {}
@@ -106,7 +110,8 @@ def _parse_interface(text: str, raw: bool = False) -> dict:
     return interface
 
 
-def _parse_interfaces(text: str, raw: bool = False) -> dict:
+def _parse_interfaces(text: str, raw: bool = False,
+                      json_compatible: bool = False) -> dict:
     """parses interface information from
     the given text for multiple interfaces.
     """
@@ -124,7 +129,7 @@ def _parse_interfaces(text: str, raw: bool = False) -> dict:
         key, value = line.split(': ')
 
         if not raw:
-            value = _parse_value(key, value)
+            value = _parse_value(key, value, json_compatible=json_compatible)
 
         if key == 'interface':
             interfaces[value] = interface = {'peers': {}}
@@ -143,19 +148,21 @@ def _parse_interfaces(text: str, raw: bool = False) -> dict:
     return interfaces
 
 
-def show(interface: str = 'all', *, raw: bool = False, _wg: str = WG):
+def show(interface: str = 'all', *, raw: bool = False,
+         json_compatible: bool = False, _wg: str = WG):
     """Yields status information."""
 
     if interface == 'all':
         text = check_output((_wg, 'show', 'all'), text=True).strip()
-        return _parse_interfaces(text, raw=raw)
+        return _parse_interfaces(
+            text, raw=raw, json_compatible=json_compatible)
 
     if interface == 'interfaces':
         text = check_output((_wg, 'show', 'interfaces'), text=True).strip()
         return text.split()
 
     text = check_output((_wg, 'show', interface), text=True).strip()
-    return _parse_interface(text, raw=raw)
+    return _parse_interface(text, raw=raw, json_compatible=json_compatible)
 
 
 # pylint: disable=W0622
