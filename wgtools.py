@@ -66,9 +66,10 @@ def _parse_value(key, value):
 
     if key == 'transfer':
         received, sent = value.split(',')
-        received = received.replace('received', '')
-        sent = sent.replace('sent', '')
-        return {'received': received.strip(), 'sent': sent.strip()}
+        return {
+            'received': received.replace('received', '').strip(),
+            'sent': sent.replace('sent', '').strip()
+        }
 
     if value == '(hidden)':
         return None
