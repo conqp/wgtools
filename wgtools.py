@@ -14,7 +14,8 @@ __all__ = [
     'pubkey',
     'keypair',
     'genpsk',
-    'show'
+    'show',
+    'set'
 ]
 
 
