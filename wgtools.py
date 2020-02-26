@@ -183,19 +183,27 @@ def set(interface: str, listen_port: int = None, fwmark: str = None,
             if settings.get('remove'):
                 args.append('remove')
 
-            if psk := settings.get('preshared-key'):
+            psk = settings.get('preshared-key')
+
+            if psk:
                 args.append('preshared-key')
                 args.append(psk)
 
-            if endpoint := settings.get('endpoint'):
+            endpoint = settings.get('endpoint')
+
+            if endpoint:
                 args.append('endpoint')
                 args.append(str(endpoint))
 
-            if persistent_keepalive := settings.get('persistent-keepalive'):
+            persistent_keepalive = settings.get('persistent-keepalive')
+
+            if persistent_keepalive:
                 args.append('persistent-keepalive')
                 args.append(str(persistent_keepalive))
 
-            if allowed_ips := settings.get('allowed-ips'):
+            allowed_ips = settings.get('allowed-ips')
+
+            if allowed_ips:
                 args.append('allowed-ips')
                 args.append(','.join(str(ip) for ip in allowed_ips))
 
