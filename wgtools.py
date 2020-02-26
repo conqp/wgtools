@@ -219,10 +219,10 @@ def clear_peers(interface: str, *, _wg: tuple = WG):
         raise ValueError('Invalid interface name:', interface)
 
     if interface == 'all':
-        for interface in show('interfaces'):    # pylint: disable=R1704
-            clear_peers(interface)
+        for interface in show('interfaces', _wg=_wg):  # pylint: disable=R1704
+            clear_peers(interface, _wg=_wg)
     else:
-        peers = show(interface)['peers'].keys()
+        peers = show(interface, _wg=_wg)['peers'].keys()
         peers = {key: {'remove': True} for key in peers}
 
         if peers:
