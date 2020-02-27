@@ -1,5 +1,6 @@
 """Python bindings for WireGuard."""
 
+from __future__ import annotations
 from ipaddress import ip_network
 from os import linesep
 from pathlib import Path
@@ -29,6 +30,15 @@ class Keypair(NamedTuple):
     public: str
     private: str
 
+    @classmethod
+    def generate(cls, private: str = None, *, _wg: tuple = WG) -> Keypair:
+        """Generates a public / private key pair."""
+        if private is None:
+            private = genkey(_wg=_wg)
+
+        public = pubkey(private, _wg=_wg)
+        return Keypair(public, private)
+
 
 def genkey(*, _wg: tuple = WG) -> str:
     """Generates a new private key."""
@@ -45,9 +55,7 @@ def pubkey(key: str, *, _wg: tuple = WG) -> str:
 def keypair(*, _wg: tuple = WG) -> Keypair:
     """Generates a public-private key pair."""
 
-    private = genkey(_wg=_wg)
-    public = pubkey(private, _wg=_wg)
-    return Keypair(public, private)
+    return Keypair.generate(_wg=_wg)
 
 
 def genpsk(*, _wg: tuple = WG) -> str:
