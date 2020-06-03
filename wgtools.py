@@ -64,14 +64,26 @@ def genpsk(*, _wg: tuple = WG) -> str:
     return check_output((*_wg, 'genpsk'), text=True).strip()
 
 
+def _parse_ip_networks(value: str, json_compatible: bool = False):
+    """Returns a parsed IP networks from a string."""
+
+    for network in value.split(','):
+        network = network.strip()
+
+        if network == '(none)':
+            continue
+
+        if not json_compatible:
+            network = ip_network(network)
+
+        yield network
+
+
 def _parse_value(key: str, value: str, *, json_compatible: bool = False):
     """Parses key / value pairs for wg show."""
 
     if key == 'allowed ips':
-        if json_compatible:
-            return [ip.strip() for ip in value.split(',')]
-
-        return [ip_network(ip.strip()) for ip in value.split(',')]
+        return list(_parse_ip_networks(value, json_compatible=json_compatible))
 
     if key == 'listening port':
         return int(value)
