@@ -21,7 +21,7 @@ __all__ = [
 ]
 
 
-WG = ('/usr/bin/wg',)
+WG = '/usr/bin/wg'
 
 
 class Keypair(NamedTuple):
@@ -31,7 +31,7 @@ class Keypair(NamedTuple):
     private: str
 
     @classmethod
-    def generate(cls, private: str = None, *, _wg: tuple = WG) -> Keypair:
+    def generate(cls, private: str = None, *, _wg: str = WG) -> Keypair:
         """Generates a public / private key pair."""
         if private is None:
             private = genkey(_wg=_wg)
@@ -40,31 +40,31 @@ class Keypair(NamedTuple):
         return Keypair(public, private)
 
 
-def genkey(*, _wg: tuple = WG) -> str:
+def genkey(*, _wg: str = WG) -> str:
     """Generates a new private key."""
 
-    return check_output((*_wg, 'genkey'), text=True).strip()
+    return check_output((_wg, 'genkey'), text=True).strip()
 
 
-def pubkey(key: str, *, _wg: tuple = WG) -> str:
+def pubkey(key: str, *, _wg: str = WG) -> str:
     """Generates a public key for the given private key."""
 
-    return check_output((*_wg, 'pubkey'), input=key, text=True).strip()
+    return check_output((_wg, 'pubkey'), input=key, text=True).strip()
 
 
-def keypair(*, _wg: tuple = WG) -> Keypair:
+def keypair(*, _wg: str = WG) -> Keypair:
     """Generates a public-private key pair."""
 
     return Keypair.generate(_wg=_wg)
 
 
-def genpsk(*, _wg: tuple = WG) -> str:
+def genpsk(*, _wg: str = WG) -> str:
     """Generates a pre-shared key."""
 
-    return check_output((*_wg, 'genpsk'), text=True).strip()
+    return check_output((_wg, 'genpsk'), text=True).strip()
 
 
-def _parse_ip_networks(value: str, json_compatible: bool = False):
+def _parse_ip_networks(value: str, json: bool = False):
     """Returns a parsed IP networks from a string."""
 
     for network in value.split(','):
@@ -73,17 +73,17 @@ def _parse_ip_networks(value: str, json_compatible: bool = False):
         if network == '(none)':
             continue
 
-        if not json_compatible:
+        if not json:
             network = ip_network(network)
 
         yield network
 
 
-def _parse_value(key: str, value: str, json_compatible: bool = False):
+def parse_value(key: str, value: str, json: bool = False):
     """Parses key / value pairs for wg show."""
 
     if key == 'allowed ips':
-        return list(_parse_ip_networks(value, json_compatible=json_compatible))
+        return list(_parse_ip_networks(value, json=json))
 
     if key == 'listening port':
         return int(value)
@@ -101,8 +101,7 @@ def _parse_value(key: str, value: str, json_compatible: bool = False):
     return value
 
 
-def _parse_interface(text: str, raw: bool = False,
-                     json_compatible: bool = False) -> dict:
+def parse_interface(text: str, raw: bool = False, json: bool = False) -> dict:
     """Parses interface information from the given text."""
 
     interface = {'peers': {}}
@@ -117,7 +116,7 @@ def _parse_interface(text: str, raw: bool = False,
         key, value = line.split(': ')
 
         if not raw:
-            value = _parse_value(key, value, json_compatible=json_compatible)
+            value = parse_value(key, value, json=json)
 
         if key == 'peer':
             interface['peers'][value] = peer = {}
@@ -131,8 +130,7 @@ def _parse_interface(text: str, raw: bool = False,
     return interface
 
 
-def _parse_interfaces(text: str, raw: bool = False,
-                      json_compatible: bool = False) -> dict:
+def parse_interfaces(text: str, raw: bool = False, json: bool = False) -> dict:
     """parses interface information from
     the given text for multiple interfaces.
     """
@@ -150,7 +148,7 @@ def _parse_interfaces(text: str, raw: bool = False,
         key, value = line.split(': ')
 
         if not raw:
-            value = _parse_value(key, value, json_compatible=json_compatible)
+            value = parse_value(key, value, json=json)
 
         if key == 'interface':
             interfaces[value] = interface = {'peers': {}}
@@ -170,25 +168,24 @@ def _parse_interfaces(text: str, raw: bool = False,
 
 
 def show(interface: str = 'all', *, raw: bool = False,
-         json_compatible: bool = False, _wg: tuple = WG):
+         json: bool = False, _wg: str = WG):
     """Yields status information."""
 
     if interface == 'all':
-        text = check_output((*_wg, 'show', 'all'), text=True).strip()
-        return _parse_interfaces(
-            text, raw=raw, json_compatible=json_compatible)
+        text = check_output((_wg, 'show', 'all'), text=True).strip()
+        return parse_interfaces(text, raw=raw, json=json)
 
     if interface == 'interfaces':
-        text = check_output((*_wg, 'show', 'interfaces'), text=True).strip()
+        text = check_output((_wg, 'show', 'interfaces'), text=True).strip()
         return text.split()
 
-    text = check_output((*_wg, 'show', interface), text=True).strip()
-    return _parse_interface(text, raw=raw, json_compatible=json_compatible)
+    text = check_output((_wg, 'show', interface), text=True).strip()
+    return parse_interface(text, raw=raw, json=json)
 
 
 # pylint: disable=W0622
 def set(interface: str, listen_port: int = None, fwmark: str = None,
-        private_key: Path = None, peers: dict = None, *, _wg: tuple = WG):
+        private_key: Path = None, peers: dict = None, *, _wg: str = WG):
     """Sets interface configuration."""
 
     args = ['set', interface]
@@ -229,10 +226,10 @@ def set(interface: str, listen_port: int = None, fwmark: str = None,
                 args.append('allowed-ips')
                 args.append(','.join(str(ip) for ip in allowed_ips))
 
-    return check_call((*_wg, *args))
+    return check_call((_wg, *args))
 
 
-def clear_peers(interface: str, *, _wg: tuple = WG):
+def clear_peers(interface: str, *, _wg: str = WG):
     """Removes all peers from the selected interface or all interfaces."""
 
     if interface == 'interfaces':
