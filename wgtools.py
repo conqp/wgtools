@@ -108,9 +108,7 @@ def parse_interface(text: str, raw: bool = False, json: bool = False) -> dict:
     peer = None
 
     for line in text.split(linesep):
-        line = line.strip()
-
-        if not line:
+        if not (line := line.strip()):
             continue
 
         key, value = line.split(': ')
@@ -140,9 +138,7 @@ def parse_interfaces(text: str, raw: bool = False, json: bool = False) -> dict:
     peer = None
 
     for line in text.split(linesep):
-        line = line.strip()
-
-        if not line:
+        if not (line := line.strip()):
             continue
 
         key, value = line.split(': ')
