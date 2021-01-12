@@ -1,12 +1,20 @@
 #! /usr/bin/env python
+"""Setup script."""
 
-from distutils.core import setup
+
+from setuptools import setup
+
 
 setup(
     name='wgtools',
+    use_scm_version=True,
+    setup_requires=['setuptools_scm'],
     author='Richard Neumann',
-    author_email='<mail at richard dash neumann dot de>',
+    author_email='mail@richard-neumann.de',
+    python_requires='>=3.8',
     py_modules=['wgtools'],
     url='https://gitlab.com/coNQP/wgtools',
     license='GPLv3',
-    description='Python bindings for wireguard-tools.')
+    description='Python bindings for wireguard-tools.',
+    keywords='wireguard python bindings wg tools'
+)
