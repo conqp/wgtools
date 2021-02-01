@@ -4,9 +4,10 @@ from __future__ import annotations
 from ipaddress import ip_network
 from os import linesep
 from pathlib import Path
+from shutil import which
 from subprocess import check_call, check_output
 from typing import NamedTuple
-from shutil import which
+
 
 __all__ = [
     'WG',
