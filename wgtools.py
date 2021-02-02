@@ -65,7 +65,7 @@ def genpsk(*, _wg: str = WG) -> str:
     return check_output((_wg, 'genpsk'), text=True).strip()
 
 
-def _parse_ip_networks(value: str, json: bool = False) -> Iterator[
+def _parse_ip_networks(value: str, *, json: bool = False) -> Iterator[
         Union[str, IPv4Network, IPv6Network]]:
     """Returns a parsed IP networks from a string."""
 
@@ -81,7 +81,7 @@ def _parse_ip_networks(value: str, json: bool = False) -> Iterator[
         yield network
 
 
-def parse_value(key: str, value: str, json: bool = False) -> Union[
+def parse_value(key: str, value: str, *, json: bool = False) -> Union[
         list, int, dict, None, str]:
     """Parses key / value pairs for wg show."""
 
@@ -104,7 +104,8 @@ def parse_value(key: str, value: str, json: bool = False) -> Union[
     return value
 
 
-def parse_interface(text: str, raw: bool = False, json: bool = False) -> dict:
+def parse_interface(text: str, *, raw: bool = False,
+                    json: bool = False) -> dict:
     """Parses interface information from the given text."""
 
     interface = {'peers': {}}
@@ -131,7 +132,8 @@ def parse_interface(text: str, raw: bool = False, json: bool = False) -> dict:
     return interface
 
 
-def parse_interfaces(text: str, raw: bool = False, json: bool = False) -> dict:
+def parse_interfaces(text: str, *, raw: bool = False,
+                     json: bool = False) -> dict:
     """parses interface information from
     the given text for multiple interfaces.
     """
