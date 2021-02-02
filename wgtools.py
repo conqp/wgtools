@@ -6,7 +6,7 @@ from os import linesep
 from pathlib import Path
 from shutil import which
 from subprocess import check_call, check_output
-from typing import Iterator, NamedTuple, Union
+from typing import Iterator, NamedTuple, Optional, Union
 
 
 __all__ = [
@@ -32,7 +32,8 @@ class Keypair(NamedTuple):
     private: str
 
     @classmethod
-    def generate(cls, *, private: str = None, _wg: str = WG) -> Keypair:
+    def generate(cls, *, private: Optional[str] = None,
+                 _wg: str = WG) -> Keypair:
         """Generates a public / private key pair."""
         if private is None:
             private = genkey(_wg=_wg)
@@ -185,8 +186,9 @@ def show(interface: str = 'all', *, raw: bool = False,
 
 
 # pylint: disable=W0622
-def set(interface: str, *, listen_port: int = None, fwmark: str = None,
-        private_key: Path = None, peers: dict = None, _wg: str = WG) -> int:
+def set(interface: str, *, listen_port: Optional[int] = None,
+        fwmark: Optional[str] = None, private_key: Optional[Path] = None,
+        peers: Optional[dict] = None, _wg: str = WG) -> int:
     """Sets interface configuration."""
 
     args = [_wg, 'set', interface]
