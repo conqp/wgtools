@@ -205,7 +205,7 @@ def set(interface: str, *, listen_port: Optional[int] = None,
         args.append('private-key')
         args.append(private_key)
 
-    if peers:
+    if not peers:
         return check_call(args)
 
     for peer, settings in peers.items():
