@@ -44,13 +44,13 @@ class Keypair(NamedTuple):
 def genkey(*, _wg: str = WG) -> str:
     """Generates a new private key."""
 
-    return check_output((_wg, 'genkey'), text=True).strip()
+    return check_output([_wg, 'genkey'], text=True).strip()
 
 
 def pubkey(key: str, *, _wg: str = WG) -> str:
     """Generates a public key for the given private key."""
 
-    return check_output((_wg, 'pubkey'), input=key, text=True).strip()
+    return check_output([_wg, 'pubkey'], input=key, text=True).strip()
 
 
 def keypair(*, _wg: str = WG) -> Keypair:
@@ -62,7 +62,7 @@ def keypair(*, _wg: str = WG) -> Keypair:
 def genpsk(*, _wg: str = WG) -> str:
     """Generates a pre-shared key."""
 
-    return check_output((_wg, 'genpsk'), text=True).strip()
+    return check_output([_wg, 'genpsk'], text=True).strip()
 
 
 def _parse_ip_networks(value: str, *, json: bool = False) -> Iterator[
@@ -173,14 +173,14 @@ def show(interface: str = 'all', *, raw: bool = False,
     """Yields status information."""
 
     if interface == 'all':
-        text = check_output((_wg, 'show', 'all'), text=True).strip()
+        text = check_output([_wg, 'show', 'all'], text=True).strip()
         return parse_interfaces(text, raw=raw, json=json)
 
     if interface == 'interfaces':
-        text = check_output((_wg, 'show', 'interfaces'), text=True).strip()
+        text = check_output([_wg, 'show', 'interfaces'], text=True).strip()
         return text.split()
 
-    text = check_output((_wg, 'show', interface), text=True).strip()
+    text = check_output([_wg, 'show', interface], text=True).strip()
     return parse_interface(text, raw=raw, json=json)
 
 
@@ -189,7 +189,7 @@ def set(interface: str, *, listen_port: int = None, fwmark: str = None,
         private_key: Path = None, peers: dict = None, _wg: str = WG) -> int:
     """Sets interface configuration."""
 
-    args = ['set', interface]
+    args = [_wg, 'set', interface]
 
     if listen_port is not None:
         args.append('listen-port')
@@ -204,7 +204,7 @@ def set(interface: str, *, listen_port: int = None, fwmark: str = None,
         args.append(private_key)
 
     if peers:
-        return check_call((_wg, *args))
+        return check_call(args)
 
     for peer, settings in peers.items():
         args.append('peer')
@@ -229,7 +229,7 @@ def set(interface: str, *, listen_port: int = None, fwmark: str = None,
             args.append('allowed-ips')
             args.append(','.join(str(ip) for ip in allowed_ips))
 
-    return check_call((_wg, *args))
+    return check_call(args)
 
 
 def clear_peers(interface: str, *, _wg: str = WG) -> None:
