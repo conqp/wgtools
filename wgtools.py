@@ -1,12 +1,12 @@
 """Python bindings for WireGuard."""
 
 from __future__ import annotations
-from ipaddress import ip_network
+from ipaddress import IPv4Network, IPv6Network, ip_network
 from os import linesep
 from pathlib import Path
 from shutil import which
 from subprocess import check_call, check_output
-from typing import NamedTuple
+from typing import Iterator, NamedTuple, Union
 
 
 __all__ = [
@@ -65,7 +65,8 @@ def genpsk(*, _wg: str = WG) -> str:
     return check_output((_wg, 'genpsk'), text=True).strip()
 
 
-def _parse_ip_networks(value: str, json: bool = False):
+def _parse_ip_networks(value: str, json: bool = False) -> Iterator[
+        Union[str, IPv4Network, IPv6Network]]:
     """Returns a parsed IP networks from a string."""
 
     for network in value.split(','):
@@ -80,7 +81,8 @@ def _parse_ip_networks(value: str, json: bool = False):
         yield network
 
 
-def parse_value(key: str, value: str, json: bool = False):
+def parse_value(key: str, value: str, json: bool = False) -> Union[
+        list, int, dict, None, str]:
     """Parses key / value pairs for wg show."""
 
     if key == 'allowed ips':
@@ -165,7 +167,7 @@ def parse_interfaces(text: str, raw: bool = False, json: bool = False) -> dict:
 
 
 def show(interface: str = 'all', *, raw: bool = False,
-         json: bool = False, _wg: str = WG):
+         json: bool = False, _wg: str = WG) -> Union[dict, list]:
     """Yields status information."""
 
     if interface == 'all':
@@ -182,7 +184,8 @@ def show(interface: str = 'all', *, raw: bool = False,
 
 # pylint: disable=W0622
 def set(interface: str, listen_port: int = None, fwmark: str = None,
-        private_key: Path = None, peers: dict = None, *, _wg: str = WG):
+        private_key: Path = None, peers: dict = None, *,
+        _wg: str = WG) -> int:
     """Sets interface configuration."""
 
     args = ['set', interface]
@@ -226,7 +229,7 @@ def set(interface: str, listen_port: int = None, fwmark: str = None,
     return check_call((_wg, *args))
 
 
-def clear_peers(interface: str, *, _wg: str = WG):
+def clear_peers(interface: str, *, _wg: str = WG) -> None:
     """Removes all peers from the selected interface or all interfaces."""
 
     if interface == 'interfaces':
