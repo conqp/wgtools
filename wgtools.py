@@ -185,9 +185,8 @@ def show(interface: str = 'all', *, raw: bool = False,
 
 
 # pylint: disable=W0622
-def set(interface: str, listen_port: int = None, fwmark: str = None,
-        private_key: Path = None, peers: dict = None, *,
-        _wg: str = WG) -> int:
+def set(interface: str, *, listen_port: int = None, fwmark: str = None,
+        private_key: Path = None, peers: dict = None, _wg: str = WG) -> int:
     """Sets interface configuration."""
 
     args = ['set', interface]
