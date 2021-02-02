@@ -204,28 +204,30 @@ def set(interface: str, *, listen_port: int = None, fwmark: str = None,
         args.append(private_key)
 
     if peers:
-        for peer, settings in peers.items():
-            args.append('peer')
-            args.append(peer)
+        return check_call((_wg, *args))
 
-            if settings.get('remove'):
-                args.append('remove')
+    for peer, settings in peers.items():
+        args.append('peer')
+        args.append(peer)
 
-            if psk := settings.get('preshared-key'):
-                args.append('preshared-key')
-                args.append(psk)
+        if settings.get('remove'):
+            args.append('remove')
 
-            if endpoint := settings.get('endpoint'):
-                args.append('endpoint')
-                args.append(str(endpoint))
+        if psk := settings.get('preshared-key'):
+            args.append('preshared-key')
+            args.append(psk)
 
-            if persistent_keepalive := settings.get('persistent-keepalive'):
-                args.append('persistent-keepalive')
-                args.append(str(persistent_keepalive))
+        if endpoint := settings.get('endpoint'):
+            args.append('endpoint')
+            args.append(str(endpoint))
 
-            if allowed_ips := settings.get('allowed-ips'):
-                args.append('allowed-ips')
-                args.append(','.join(str(ip) for ip in allowed_ips))
+        if persistent_keepalive := settings.get('persistent-keepalive'):
+            args.append('persistent-keepalive')
+            args.append(str(persistent_keepalive))
+
+        if allowed_ips := settings.get('allowed-ips'):
+            args.append('allowed-ips')
+            args.append(','.join(str(ip) for ip in allowed_ips))
 
     return check_call((_wg, *args))
 
