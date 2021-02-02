@@ -32,7 +32,7 @@ class Keypair(NamedTuple):
     private: str
 
     @classmethod
-    def generate(cls, private: str = None, *, _wg: str = WG) -> Keypair:
+    def generate(cls, *, private: str = None, _wg: str = WG) -> Keypair:
         """Generates a public / private key pair."""
         if private is None:
             private = genkey(_wg=_wg)
