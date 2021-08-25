@@ -24,6 +24,9 @@ __all__ = [
 
 WG = (which('wg'),)
 
+IPNetworks = Iterator[Union[str, IPv4Network, IPv6Network]]
+ParsedValue = Union[list, int, dict, None, str]
+
 
 class Keypair(NamedTuple):
     """A public / private key pair."""
@@ -66,8 +69,7 @@ def genpsk(*, _wg: tuple[str] = WG) -> str:
     return check_output([_wg, 'genpsk'], text=True).strip()
 
 
-def _parse_ip_networks(value: str, *, json: bool = False) -> Iterator[
-        Union[str, IPv4Network, IPv6Network]]:
+def _parse_ip_networks(value: str, *, json: bool = False) -> IPNetworks:
     """Returns a parsed IP networks from a string."""
 
     for network in value.split(','):
@@ -82,8 +84,7 @@ def _parse_ip_networks(value: str, *, json: bool = False) -> Iterator[
         yield network
 
 
-def parse_value(key: str, value: str, *, json: bool = False) -> Union[
-        list, int, dict, None, str]:
+def parse_value(key: str, value: str, *, json: bool = False) -> ParsedValue:
     """Parses key / value pairs for wg show."""
 
     if key == 'allowed ips':
