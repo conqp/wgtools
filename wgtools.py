@@ -22,7 +22,7 @@ __all__ = [
 ]
 
 
-WG = which('wg')
+WG = (which('wg'),)
 
 
 class Keypair(NamedTuple):
@@ -33,7 +33,7 @@ class Keypair(NamedTuple):
 
     @classmethod
     def generate(cls, *, private: Optional[str] = None,
-                 _wg: str = WG) -> Keypair:
+                 _wg: tuple[str] = WG) -> Keypair:
         """Generates a public / private key pair."""
         if private is None:
             private = genkey(_wg=_wg)
@@ -42,25 +42,25 @@ class Keypair(NamedTuple):
         return Keypair(public, private)
 
 
-def genkey(*, _wg: str = WG) -> str:
+def genkey(*, _wg: tuple[str] = WG) -> str:
     """Generates a new private key."""
 
-    return check_output([_wg, 'genkey'], text=True).strip()
+    return check_output([*_wg, 'genkey'], text=True).strip()
 
 
-def pubkey(key: str, *, _wg: str = WG) -> str:
+def pubkey(key: str, *, _wg: tuple[str] = WG) -> str:
     """Generates a public key for the given private key."""
 
-    return check_output([_wg, 'pubkey'], input=key, text=True).strip()
+    return check_output([*_wg, 'pubkey'], input=key, text=True).strip()
 
 
-def keypair(*, _wg: str = WG) -> Keypair:
+def keypair(*, _wg: tuple[str] = WG) -> Keypair:
     """Generates a public-private key pair."""
 
     return Keypair.generate(_wg=_wg)
 
 
-def genpsk(*, _wg: str = WG) -> str:
+def genpsk(*, _wg: tuple[str] = WG) -> str:
     """Generates a pre-shared key."""
 
     return check_output([_wg, 'genpsk'], text=True).strip()
@@ -170,28 +170,28 @@ def parse_interfaces(text: str, *, raw: bool = False,
 
 
 def show(interface: str = 'all', *, raw: bool = False,
-         json: bool = False, _wg: str = WG) -> Union[dict, list]:
+         json: bool = False, _wg: tuple[str] = WG) -> Union[dict, list]:
     """Yields status information."""
 
     if interface == 'all':
-        text = check_output([_wg, 'show', 'all'], text=True).strip()
+        text = check_output([*_wg, 'show', 'all'], text=True).strip()
         return parse_interfaces(text, raw=raw, json=json)
 
     if interface == 'interfaces':
-        text = check_output([_wg, 'show', 'interfaces'], text=True).strip()
+        text = check_output([*_wg, 'show', 'interfaces'], text=True).strip()
         return text.split()
 
-    text = check_output([_wg, 'show', interface], text=True).strip()
+    text = check_output([*_wg, 'show', interface], text=True).strip()
     return parse_interface(text, raw=raw, json=json)
 
 
 # pylint: disable=W0622
 def set(interface: str, *, listen_port: Optional[int] = None,
         fwmark: Optional[str] = None, private_key: Optional[Path] = None,
-        peers: Optional[dict] = None, _wg: str = WG) -> int:
+        peers: Optional[dict] = None, _wg: tuple[str] = WG) -> int:
     """Sets interface configuration."""
 
-    args = [_wg, 'set', interface]
+    args = [*_wg, 'set', interface]
 
     if listen_port is not None:
         args.append('listen-port')
@@ -234,7 +234,7 @@ def set(interface: str, *, listen_port: Optional[int] = None,
     return check_call(args)
 
 
-def clear_peers(interface: str, *, _wg: str = WG) -> None:
+def clear_peers(interface: str, *, _wg: tuple[str] = WG) -> None:
     """Removes all peers from the selected interface or all interfaces."""
 
     if interface == 'interfaces':
