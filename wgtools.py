@@ -66,7 +66,7 @@ def keypair(*, _wg: tuple[str] = WG) -> Keypair:
 def genpsk(*, _wg: tuple[str] = WG) -> str:
     """Generates a pre-shared key."""
 
-    return check_output([_wg, 'genpsk'], text=True).strip()
+    return check_output([*_wg, 'genpsk'], text=True).strip()
 
 
 def _parse_ip_networks(value: str, *, json: bool = False) -> IPNetworks:
