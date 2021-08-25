@@ -11,29 +11,43 @@ For a full documentation, please refer to `help(wgtools.<function>)`.
 
 ### Generating a private key
 
-    private_key = wgtools.genkey()
+```python3
+private_key = wgtools.genkey()
+```
 
 ### Generating a public key
 
-    public_key = wgtools.pubkey(private_key)
+```python3
+public_key = wgtools.pubkey(private_key)
+```
 
 ### Generating a keypair
 
-    keypair = wgtools.keypair()
+```python3
+keypair = wgtools.keypair()
+```
 
 or
 
-    public_key, private_key = wgtools.keypair()
+```python3
+public_key, private_key = wgtools.keypair()
+```
 
 The `keypair` object is a named tuple an can be unpacked
 
-    public_key, private_key = keypair
+```python3
+public_key, private_key = keypair
+```
     
 or accessed by atributes
 
-    public_key = keypair.public
-    private_key = keypair.private
+```python3
+public_key = keypair.public
+private_key = keypair.private
+```
 
 ### Generating a pre-shared key (PSK)
 
-    psk = wgtools.genpsk()
+```python3
+psk = wgtools.genpsk()
+```
