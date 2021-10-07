@@ -6,7 +6,7 @@ from os import linesep
 from pathlib import Path
 from shutil import which
 from subprocess import check_call, check_output
-from typing import Iterator, NamedTuple, Optional, Union
+from typing import Iterable, Iterator, NamedTuple, Optional, Union
 
 
 __all__ = [
@@ -36,7 +36,7 @@ class Keypair(NamedTuple):
 
     @classmethod
     def generate(cls, *, private: Optional[str] = None,
-                 _wg: tuple[str] = WG) -> Keypair:
+                 _wg: Iterable[str] = WG) -> Keypair:
         """Generates a public / private key pair."""
         if private is None:
             private = genkey(_wg=_wg)
@@ -45,25 +45,25 @@ class Keypair(NamedTuple):
         return Keypair(public, private)
 
 
-def genkey(*, _wg: tuple[str] = WG) -> str:
+def genkey(*, _wg: Iterable[str] = WG) -> str:
     """Generates a new private key."""
 
     return check_output([*_wg, 'genkey'], text=True).strip()
 
 
-def pubkey(key: str, *, _wg: tuple[str] = WG) -> str:
+def pubkey(key: str, *, _wg: Iterable[str] = WG) -> str:
     """Generates a public key for the given private key."""
 
     return check_output([*_wg, 'pubkey'], input=key, text=True).strip()
 
 
-def keypair(*, _wg: tuple[str] = WG) -> Keypair:
+def keypair(*, _wg: Iterable[str] = WG) -> Keypair:
     """Generates a public-private key pair."""
 
     return Keypair.generate(_wg=_wg)
 
 
-def genpsk(*, _wg: tuple[str] = WG) -> str:
+def genpsk(*, _wg: Iterable[str] = WG) -> str:
     """Generates a pre-shared key."""
 
     return check_output([*_wg, 'genpsk'], text=True).strip()
@@ -171,7 +171,7 @@ def parse_interfaces(text: str, *, raw: bool = False,
 
 
 def show(interface: str = 'all', *, raw: bool = False,
-         json: bool = False, _wg: tuple[str] = WG) -> Union[dict, list]:
+         json: bool = False, _wg: Iterable[str] = WG) -> Union[dict, list]:
     """Yields status information."""
 
     if interface == 'all':
@@ -189,7 +189,7 @@ def show(interface: str = 'all', *, raw: bool = False,
 # pylint: disable=W0622
 def set(interface: str, *, listen_port: Optional[int] = None,
         fwmark: Optional[str] = None, private_key: Optional[Path] = None,
-        peers: Optional[dict] = None, _wg: tuple[str] = WG) -> int:
+        peers: Optional[dict] = None, _wg: Iterable[str] = WG) -> int:
     """Sets interface configuration."""
 
     args = [*_wg, 'set', interface]
@@ -235,7 +235,7 @@ def set(interface: str, *, listen_port: Optional[int] = None,
     return check_call(args)
 
 
-def clear_peers(interface: str, *, _wg: tuple[str] = WG) -> None:
+def clear_peers(interface: str, *, _wg: Iterable[str] = WG) -> None:
     """Removes all peers from the selected interface or all interfaces."""
 
     if interface == 'interfaces':
