@@ -41,8 +41,7 @@ class Keypair(NamedTuple):
         if private is None:
             private = genkey(_wg=_wg)
 
-        public = pubkey(private, _wg=_wg)
-        return Keypair(public, private)
+        return cls(pubkey(private, _wg=_wg), private)
 
 
 def genkey(*, _wg: Iterable[str] = WG) -> str:
