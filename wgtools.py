@@ -35,13 +35,15 @@ class Keypair(NamedTuple):
     private: str
 
     @classmethod
-    def generate(cls, *, private: Optional[str] = None,
-                 _wg: Iterable[str] = WG) -> Keypair:
-        """Generates a public / private key pair."""
-        if private is None:
-            private = genkey(_wg=_wg)
-
+    def from_private_key(cls, private: str, *,
+                         _wg: Iterable[str] = WG) -> Keypair:
+        """Creates a keypair from a private key."""
         return cls(pubkey(private, _wg=_wg), private)
+
+    @classmethod
+    def generate(cls, *, _wg: Iterable[str] = WG) -> Keypair:
+        """Generates a public / private key pair."""
+        return cls.from_private_key(genkey(_wg=_wg), _wg=_wg)
 
 
 def genkey(*, _wg: Iterable[str] = WG) -> str:
