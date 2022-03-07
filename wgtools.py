@@ -117,7 +117,7 @@ def parse_interface(
 ) -> dict:
     """Parses interface information from the given text."""
 
-    interface = {'peers': {}}
+    interface = {'peers': (peers := {})}
     peer = None
 
     for line in text.split(linesep):
@@ -130,7 +130,7 @@ def parse_interface(
             value = parse_value(key, value, json=json)
 
         if key == 'peer':
-            interface['peers'][value] = peer = {}
+            peers[value] = peer = {}
             continue
 
         if peer is None:
