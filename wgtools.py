@@ -235,7 +235,7 @@ def set(
         listen_port: Optional[int] = None,
         fwmark: Optional[str] = None,
         private_key: Optional[Path] = None,
-        peers: Optional[dict] = None,
+        peers: Optional[dict[str, dict]] = None,
         _wg: Iterable[str] = WG
 ) -> int:
     """Sets interface configuration."""
