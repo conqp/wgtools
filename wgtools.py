@@ -35,8 +35,12 @@ class Keypair(NamedTuple):
     private: str
 
     @classmethod
-    def from_private_key(cls, private: str, *,
-                         _wg: Iterable[str] = WG) -> Keypair:
+    def from_private_key(
+            cls,
+            private: str,
+            *,
+            _wg: Iterable[str] = WG
+    ) -> Keypair:
         """Creates a keypair from a private key."""
         return cls(pubkey(private, _wg=_wg), private)
 
@@ -107,8 +111,12 @@ def parse_value(key: str, value: str, *, json: bool = False) -> ParsedValue:
     return value
 
 
-def parse_interface(text: str, *, raw: bool = False,
-                    json: bool = False) -> dict:
+def parse_interface(
+        text: str,
+        *,
+        raw: bool = False,
+        json: bool = False
+) -> dict:
     """Parses interface information from the given text."""
 
     interface = {'peers': {}}
@@ -135,8 +143,12 @@ def parse_interface(text: str, *, raw: bool = False,
     return interface
 
 
-def parse_interfaces(text: str, *, raw: bool = False,
-                     json: bool = False) -> dict:
+def parse_interfaces(
+        text: str,
+        *,
+        raw: bool = False,
+        json: bool = False
+) -> dict:
     """parses interface information from
     the given text for multiple interfaces.
     """
@@ -171,8 +183,13 @@ def parse_interfaces(text: str, *, raw: bool = False,
     return interfaces
 
 
-def show(interface: str = 'all', *, raw: bool = False,
-         json: bool = False, _wg: Iterable[str] = WG) -> Union[dict, list]:
+def show(
+        interface: str = 'all',
+        *,
+        raw: bool = False,
+        json: bool = False,
+        _wg: Iterable[str] = WG
+) -> Union[dict, list]:
     """Yields status information."""
 
     if interface == 'all':
@@ -188,9 +205,15 @@ def show(interface: str = 'all', *, raw: bool = False,
 
 
 # pylint: disable=W0622
-def set(interface: str, *, listen_port: Optional[int] = None,
-        fwmark: Optional[str] = None, private_key: Optional[Path] = None,
-        peers: Optional[dict] = None, _wg: Iterable[str] = WG) -> int:
+def set(
+        interface: str,
+        *,
+        listen_port: Optional[int] = None,
+        fwmark: Optional[str] = None,
+        private_key: Optional[Path] = None,
+        peers: Optional[dict] = None,
+        _wg: Iterable[str] = WG
+) -> int:
     """Sets interface configuration."""
 
     args = [*_wg, 'set', interface]
