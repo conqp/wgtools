@@ -188,7 +188,7 @@ def show(
         json: bool = False,
         _wg: Iterable[str] = WG
 ) -> dict | list:
-    """Yields status information."""
+    """Returns status information of a WireGuard interface."""
 
     if interface == 'all':
         text = check_output([*_wg, 'show', 'all'], text=True).strip()
