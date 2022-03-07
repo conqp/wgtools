@@ -77,9 +77,7 @@ def genpsk(*, _wg: Iterable[str] = WG) -> str:
 def _parse_ip_networks(value: str, *, json: bool = False) -> IPNetworks:
     """Returns a parsed IP networks from a string."""
 
-    for network in value.split(','):
-        network = network.strip()
-
+    for network in map(str.strip, value.split(',')):
         if network == '(none)':
             continue
 
