@@ -204,7 +204,6 @@ def show(
     return parse_interface(text, raw=raw, json=json)
 
 
-# pylint: disable=W0622
 def set(
         interface: str,
         *,
@@ -266,7 +265,7 @@ def clear_peers(interface: str, *, _wg: Iterable[str] = WG) -> None:
         raise ValueError('Invalid interface name:', interface)
 
     if interface == 'all':
-        for interface in show('interfaces', _wg=_wg):  # pylint: disable=R1704
+        for interface in show('interfaces', _wg=_wg):
             clear_peers(interface, _wg=_wg)
     else:
         peers = show(interface, _wg=_wg)['peers'].keys()
