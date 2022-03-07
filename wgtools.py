@@ -260,6 +260,13 @@ def set(
     return check_call(args)
 
 
+def clear_all_peers(*, _wg: Iterable[str] = WG) -> None:
+    """Clear all peers on all interfaces."""
+
+    for interface in show('interfaces', _wg=_wg):
+        clear_peers(interface, _wg=_wg)
+
+
 def clear_peers(interface: str, *, _wg: Iterable[str] = WG) -> None:
     """Removes all peers from the selected interface or all interfaces."""
 
@@ -267,11 +274,10 @@ def clear_peers(interface: str, *, _wg: Iterable[str] = WG) -> None:
         raise ValueError('Invalid interface name:', interface)
 
     if interface == 'all':
-        for interface in show('interfaces', _wg=_wg):
-            clear_peers(interface, _wg=_wg)
-    else:
-        peers = show(interface, _wg=_wg)['peers'].keys()
-        peers = {key: {'remove': True} for key in peers}
+        return clear_all_peers(_wg=_wg)
 
-        if peers:
-            set(interface, peers=peers, _wg=_wg)
+    peers = show(interface, _wg=_wg)['peers'].keys()
+    peers = {key: {'remove': True} for key in peers}
+
+    if peers:
+        set(interface, peers=peers, _wg=_wg)
