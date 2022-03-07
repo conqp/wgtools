@@ -6,7 +6,7 @@ from os import linesep
 from pathlib import Path
 from shutil import which
 from subprocess import check_call, check_output
-from typing import Iterable, Iterator, NamedTuple, Optional, Union
+from typing import Iterable, Iterator, NamedTuple
 
 
 __all__ = [
@@ -24,8 +24,8 @@ __all__ = [
 
 WG = (which('wg'),)
 
-IPNetworks = Iterator[Union[str, IPv4Network, IPv6Network]]
-ParsedValue = Union[list, int, dict, None, str]
+IPNetworks = Iterator[str | IPv4Network | IPv6Network]
+ParsedValue = list | int | dict | None | str
 
 
 class Keypair(NamedTuple):
@@ -187,7 +187,7 @@ def show(
         raw: bool = False,
         json: bool = False,
         _wg: Iterable[str] = WG
-) -> Union[dict, list]:
+) -> dict | list:
     """Yields status information."""
 
     if interface == 'all':
@@ -232,10 +232,10 @@ def peers_args(peers: dict[str, dict]) -> Iterator[str]:
 def set(
         interface: str,
         *,
-        listen_port: Optional[int] = None,
-        fwmark: Optional[str] = None,
-        private_key: Optional[Path] = None,
-        peers: Optional[dict[str, dict]] = None,
+        listen_port: int | None = None,
+        fwmark: str | None = None,
+        private_key: Path | None = None,
+        peers: dict[str, dict] | None = None,
         _wg: Iterable[str] = WG
 ) -> int:
     """Sets interface configuration."""
