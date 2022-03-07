@@ -147,7 +147,7 @@ def parse_interfaces(
         raw: bool = False,
         json: bool = False
 ) -> dict:
-    """parses interface information from
+    """Parses interface information from
     the given text for multiple interfaces.
     """
 
