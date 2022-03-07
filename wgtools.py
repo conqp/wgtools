@@ -202,7 +202,7 @@ def show(
     return parse_interface(text, raw=raw, json=json)
 
 
-def peer_args(peers: dict[str, dict]) -> Iterator[str]:
+def peers_args(peers: dict[str, dict]) -> Iterator[str]:
     """Yields additional args for the peers."""
 
     for peer, settings in peers.items():
@@ -255,7 +255,7 @@ def set(
         args.append(private_key)
 
     if peers:
-        args.extend(peer_args(peers))
+        args.extend(peers_args(peers))
 
     return check_call(args)
 
