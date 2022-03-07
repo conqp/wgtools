@@ -276,8 +276,10 @@ def clear_peers(interface: str, *, _wg: Iterable[str] = WG) -> None:
     if interface == 'all':
         return clear_all_peers(_wg=_wg)
 
-    peers = show(interface, _wg=_wg)['peers'].keys()
-    peers = {key: {'remove': True} for key in peers}
+    peers = {
+        key: {'remove': True} for key in
+        show(interface, _wg=_wg)['peers'].keys()
+    }
 
     if peers:
         set(interface, peers=peers, _wg=_wg)
