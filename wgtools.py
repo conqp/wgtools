@@ -202,6 +202,33 @@ def show(
     return parse_interface(text, raw=raw, json=json)
 
 
+def peer_args(peers: dict[str, dict]) -> Iterator[str]:
+    """Yields additional args for the peers."""
+
+    for peer, settings in peers.items():
+        yield 'peer'
+        yield peer
+
+        if settings.get('remove'):
+            yield 'remove'
+
+        if psk := settings.get('preshared-key'):
+            yield 'preshared-key'
+            yield psk
+
+        if endpoint := settings.get('endpoint'):
+            yield 'endpoint'
+            yield str(endpoint)
+
+        if persistent_keepalive := settings.get('persistent-keepalive'):
+            yield 'persistent-keepalive'
+            yield str(persistent_keepalive)
+
+        if allowed_ips := settings.get('allowed-ips'):
+            yield 'allowed-ips'
+            yield ','.join(str(ip) for ip in allowed_ips)
+
+
 def set(
         interface: str,
         *,
@@ -227,31 +254,8 @@ def set(
         args.append('private-key')
         args.append(private_key)
 
-    if not peers:
-        return check_call(args)
-
-    for peer, settings in peers.items():
-        args.append('peer')
-        args.append(peer)
-
-        if settings.get('remove'):
-            args.append('remove')
-
-        if psk := settings.get('preshared-key'):
-            args.append('preshared-key')
-            args.append(psk)
-
-        if endpoint := settings.get('endpoint'):
-            args.append('endpoint')
-            args.append(str(endpoint))
-
-        if persistent_keepalive := settings.get('persistent-keepalive'):
-            args.append('persistent-keepalive')
-            args.append(str(persistent_keepalive))
-
-        if allowed_ips := settings.get('allowed-ips'):
-            args.append('allowed-ips')
-            args.append(','.join(str(ip) for ip in allowed_ips))
+    if peers:
+        args.extend(peer_args(peers))
 
     return check_call(args)
 
